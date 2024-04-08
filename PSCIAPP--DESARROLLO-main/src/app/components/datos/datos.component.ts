@@ -5,9 +5,9 @@ import { UserService } from '../../services/user.service';
 import { Observable, of } from 'rxjs';  
 import { Subscription } from 'rxjs';
 import { Router } from '@angular/router';
-import { AngularFirestore, AngularFirestoreCollection } from '@angular/fire/compat/firestore';
+import { AngularFirestoreCollection } from '@angular/fire/compat/firestore';
 import { CollectionReference, Query } from '@angular/fire/compat/firestore';
-import { DocumentChangeAction } from '@angular/fire/compat/firestore';
+
 
 
 @Component({
@@ -51,7 +51,6 @@ export class DatosComponent implements OnInit {
       await this.userService.saveFormData(userId, this.nombre, `${this.dia}/${this.mes}/${this.ano}`, this.genero);
   
       // Enviar el nombre al servidor
-      await this.userService.sendUserNameToServer(userId, this.nombre); //aqui hise cambiso antes de que deje de funcionar
       localStorage.setItem('userNombre', this.nombre);
 
     setTimeout(() => {

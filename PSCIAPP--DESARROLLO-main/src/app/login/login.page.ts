@@ -1,7 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { UserService } from 'src/app/services/user.service';
-import { FormControl, FormGroup } from '@angular/forms';
+import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
+import { AlertController } from '@ionic/angular';
 
 @Component({
   selector: 'app-login',
@@ -13,32 +14,39 @@ export class LoginPage implements OnInit {
 
   constructor(
     private userService: UserService,
-    private router: Router
+    private router: Router,
+    private alertController: AlertController
   ) {
     this.formReg = new FormGroup({
-      email: new FormControl(),
-      password: new FormControl()
+      email: new FormControl('', [Validators.required, Validators.email]),
+      password: new FormControl('', [Validators.required])
     })
   }
 
   ngOnInit(): void {
   }
-  onSubmit() {
-    this.userService.login(this.formReg.value)
-      .then(response => {
-        console.log('Login successful:', response);
+
+  async onSubmit() {
+    if (this.formReg.valid) {
+      try {
+        await this.userService.login(this.formReg.value);
         this.router.navigate(['/principal2']);
-      })
-      .catch(error => {
-        console.error('Login error:', error);
-        if (error.code === 'auth/invalid-email') {
-          console.log('Correo electrónico inválido.');
-        } else if (error.code === 'auth/wrong-password') {
-          console.log('Contraseña incorrecta.');
-        } else {
-          console.log('Error de autenticación:', error.message);
-        }
-      });
+      } catch (error) {
+        this.presentAlert('Error de autenticación', 'Correo electrónico o contraseña incorrectos o no registrados.');
+      }
+    } else {
+      this.presentAlert('Error', 'Por favor, completa todos los campos correctamente.');
+    }
+  }
+
+  async presentAlert(header: string, message: string) {
+    const alert = await this.alertController.create({
+      header: header,
+      message: message,
+      buttons: ['OK']
+    });
+
+    await alert.present();
   }
 
   loginWithGoogle() {

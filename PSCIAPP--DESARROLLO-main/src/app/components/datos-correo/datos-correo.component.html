@@ -11,7 +11,7 @@
       <form (ngSubmit)="submitForm()">
         <ion-list>
           <!-- Campo para el nombre -->
-          <ion-item >
+          <ion-item  [ngClass]="{'invalid-field': !nombre}">
           <ion-label class="nacimientoText" position="floating"><strong>Como te gustaria que te llame PSCI.IA : </strong></ion-label>
             <ion-input [(ngModel)]="nombre" name="nombre" required></ion-input>
           </ion-item>
@@ -29,14 +29,14 @@
             </ion-select>
 
             <ion-label>Mes</ion-label>
-            <ion-select [(ngModel)]="mes" interface="popover" name="mes">
+            <ion-select [(ngModel)]="mes" interface="popover" name="mes" (ionChange)="actualizarDias()">
               <ion-select-option *ngFor="let mesOption of meses" [value]="mesOption">
                 {{ mesOption }}
               </ion-select-option>
             </ion-select>
 
-            <ion-label>Año</ion-label>
-            <ion-select [(ngModel)]="ano" interface="popover" name="ano">
+           <ion-label>Año</ion-label>
+            <ion-select [(ngModel)]="ano" interface="popover" name="ano" (ionChange)="actualizarDias()">
               <ion-select-option *ngFor="let anoOption of anos" [value]="anoOption">
                 {{ anoOption }}
               </ion-select-option>
@@ -62,19 +62,8 @@
           <div class="botones">
             <ion-button expand="default" fill="outline" type="submit" class="but" color="warning" shape="round">Enviar</ion-button>
             <br>
-            <ion-button expand="full" fill="outline" (click)="recibirDatos()" class="but" color="warning" shape="round">Recibir datos</ion-button>
           </div>
-        
-          <!-- Datos recibidos -->
-          <div *ngIf="misDatos.length > 0">
-            <p>Datos recibidos:</p>
-            <ul>
-              <li *ngFor="let dato of misDatos" class="datos-list-item">
-                <strong>Nombre:</strong> {{ dato.nombre }}<br>
-                <strong>Fecha de Nacimiento:</strong> {{ dato.fechaNacimiento }}
-              </li>
-            </ul>
-          </div>
+      
         </ion-list>
       </form>
     </div>

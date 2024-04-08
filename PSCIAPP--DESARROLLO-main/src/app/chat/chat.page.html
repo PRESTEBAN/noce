@@ -1,5 +1,10 @@
 <ion-header [translucent]="true">
   <ion-toolbar>
+    <ion-toolbar>
+      <div class="regresar"> <!-- Igual es un contenedor, pero este es mas pequeño y engloba solo el boton para regresar al menu inicial  -->
+          <img src="../../assets/arrow-left.png" alt="" (click)="volver2()">
+      </div>
+    </ion-toolbar>
     <ion-title class="ion-text-center">
      <strong>PSCYAI</strong>
     </ion-title>
@@ -8,22 +13,24 @@
 
 <ion-content [scrollEvents]="true">
 
-
   <div *ngIf="!messages.length" class="empty">
     <ion-icon src="assets/bot.svg"></ion-icon>
     <h4>Cuentame tus problemas...</h4>
   </div>
 
-  <ion-item lines="none" [ngClass]="{'bot': m.sender !== 'me'}"   class="chat-item" *ngFor="let m of messages; index as i">
-    <ion-badge slot="start" [color]="m.sender == 'me' ? 'success' : 'tertiary'" mode="ios">
-      <ion-icon  class="chat-icon"  [src]="m.sender == 'me' ? 'assets/user.svg' : 'assets/bot.svg'"></ion-icon>
+  <ion-item lines="none" [ngClass]="{'bot': m.sender !== 'me'}" class="chat-item" *ngFor="let m of messages; index as i">
+    <ion-badge slot="start" [color]="m.sender == 'me' ? 'success' : 'success'" mode="ios" >
+      <img *ngIf="m.sender == 'me'; else botImage" class="chat-icon" src="assets/user.svg" alt="User Avatar">
+      <ng-template #botImage>
+        <img class="chat-icon" [src]="m.sender == 'bot' ? selectedCardImageUrl : m.imageUrl" alt="Avatar">
+      </ng-template>
     </ion-badge>
     <ion-label class="ion-text-wrap">
       <p class="w-space">{{m.content}}</p>
       <ion-spinner *ngIf="loading && (i+1 == messages.length)" color="tertiary" name="dots"></ion-spinner>
     </ion-label>
   </ion-item>
-
+  
 
 </ion-content>
 
@@ -33,7 +40,6 @@
 
   <ion-item class="text-box-item">
     <ion-textarea formControlName="promt" auto-grow="true" placeholder="Escribe algo..."></ion-textarea>
-    
     <ion-buttons slot="end">  
      <ion-button type="submit" [disabled] = "form.invalid">
        <ion-icon name="send" class="submit-icon"></ion-icon > 
@@ -42,9 +48,4 @@
    </ion-item>
 
 </form>
-
- <ion-button expand="full" (click)="logout()">
-   Logout
-  </ion-button>
-
 </ion-footer>

@@ -1,7 +1,7 @@
 // user.service.ts
 import { Injectable } from '@angular/core';
 import { Auth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, signInWithPopup, GoogleAuthProvider, sendPasswordResetEmail } from '@angular/fire/auth';
-import { AngularFirestore } from '@angular/fire/compat/firestore';
+import { AngularFirestore, AngularFirestoreCollection } from '@angular/fire/compat/firestore';
 import { HttpClient } from '@angular/common/http';
 
 
@@ -35,7 +35,21 @@ export class UserService {
   login({ email, password }: any) {
     return signInWithEmailAndPassword(this.auth, email, password);
   }
-  
+
+  saveUserChoice(userId: string, choice: number) {
+    // Referencia al documento del usuario en Firestore
+    const userDocRef = this.firestore.collection('users').doc(userId);
+
+    // Actualizar el documento del usuario con la elección del usuario
+    return userDocRef.update({
+      choice: choice // Asigna la elección del usuario al atributo "choice"
+    }).catch(error => {
+      console.error('Error al guardar la elección del usuario:', error);
+    });
+  }
+
+ 
+
 
   loginWithGoogle() {
     return signInWithPopup(this.auth, new GoogleAuthProvider());
@@ -100,6 +114,30 @@ export class UserService {
 
   }
 
+  async getUserNameFromDatabase(userId: string): Promise<string> {
+    try {
+      const formDataCollectionRef: AngularFirestoreCollection<any> = this.firestore.collection<any>('form-data-Correo', ref => ref.where('userId', '==', userId).limit(1));
+      const snapshot = await formDataCollectionRef.get().toPromise();
+      if (snapshot && !snapshot.empty) { // Verificar que snapshot no sea undefined y que no esté vacío
+        const userData = snapshot.docs[0].data();
+        if (this.isValidUserData(userData)) {
+          return userData.nombre || 'Invitado';
+        }
+      }
+      return 'Invitado';
+    } catch (error) {
+      console.error('Error al obtener el nombre desde la base de datos:', error);
+      return 'Invitado';
+    }
+  }
+  
+  
+
+  private isValidUserData(userData: any): userData is { nombre: string } {
+    return typeof userData === 'object' && userData !== null && typeof userData.nombre === 'string';
+  }
+
+
   async saveFormDataCorreo(userId: string, nombre: string, fechaNacimiento: string, genero: string) {
     try {
       // Crear una referencia a la colección form-data-Correo
@@ -117,11 +155,12 @@ export class UserService {
       console.log('Form data saved successfully (Correo).');
       localStorage.setItem(`userNombre_${userId}`, nombre);
 
+    
+
     } catch (error) {
       console.error('Error saving form data (Correo):', error);
     }
   }
-
 
   async saveUserMessage(userId: string, userMessage: string, botMessage: string) {
   try {
@@ -141,10 +180,8 @@ export class UserService {
       content: botMessage,
       timestamp: new Date(),
     });
-
     // Crear una referencia a la nueva colección para los datos del formulario
     const formDataRef = this.firestore.collection(`form-data`);
-
     // Guardar datos del formulario
     await formDataRef.add({
       userId: userId,
@@ -152,22 +189,11 @@ export class UserService {
       birthdate: botMessage, // Puedes ajustar este campo según tus necesidades
       timestamp: new Date(),
     });
-
     console.log('Messages and form data saved successfully.');
   } catch (error) {
     console.error('Error saving messages and form data:', error);
   }
 }
 
-async sendUserNameToServer(userId: string, name: string) { //cree esto antes de que deje de funcionar, pero esto me sierve
-  try {
-    const serverUrl = 'http://localhost:3000'; // Cambia esto con la URL de tu servidor
 
-    if (userId) {
-      await this.http.post(`${serverUrl}/saveUserName`, { userId, name }).toPromise();
-    }
-  } catch (error) {
-    console.error('Error al enviar el nombre al servidor:', error);
-  }
-}
 }

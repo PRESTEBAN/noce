@@ -8,6 +8,8 @@ import { Principal2PageRoutingModule } from './principal2-routing.module';
 
 import { Principal2Page } from './principal2.page';
 
+import { CardsAIComponent } from "../components/cards-ai/cards-ai.component";
+
 @NgModule({
   imports: [
     CommonModule,
@@ -15,6 +17,6 @@ import { Principal2Page } from './principal2.page';
     IonicModule,
     Principal2PageRoutingModule
   ],
-  declarations: [Principal2Page]
+  declarations: [Principal2Page, CardsAIComponent]
 })
 export class Principal2PageModule {}

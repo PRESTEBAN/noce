@@ -1,13 +1,9 @@
 import { NgModule } from '@angular/core';
 import { PreloadAllModules, RouterModule, Routes } from '@angular/router';
-import { LoginComponent } from './components/login/login.component';
-import { RegisterComponent } from './components/register/register.component';
-import { canActivate, redirectUnauthorizedTo } from '@angular/fire/auth-guard';
-import { MainComponent } from './components/main/main.component';
 import { DatosComponent } from "./components/datos/datos.component";
 import { DatosCorreoComponent } from "./components/datos-correo/datos-correo.component";
-
-
+import { CardsPersonalidadComponent } from "./components/cards-personalidad/cards-personalidad.component";
+import { CardsPersonalidadcorreoComponent } from "./components/cards-personalidadcorreo/cards-personalidadcorreo.component";
 const routes: Routes = [
   {
     path: 'home',
@@ -32,6 +28,8 @@ const routes: Routes = [
   },
   { path: 'datos', component: DatosComponent },
   { path: 'datos-correo', component: DatosCorreoComponent },
+  { path: 'cards-personalidad', component: CardsPersonalidadComponent },
+  { path: 'cards-personalidadcorreo', component: CardsPersonalidadcorreoComponent },
   {
     path: 'principal',
     loadChildren: () => import('./principal/principal.module').then( m => m.PrincipalPageModule)

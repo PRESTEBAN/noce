@@ -1,5 +1,4 @@
 import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
 import { UserService } from './../services/user.service';
 import { Router } from '@angular/router';
 
@@ -12,7 +11,7 @@ import { Router } from '@angular/router';
 export class PrincipalPage implements OnInit {
   
   nombreUsuario: string = '';
-  constructor(private route: ActivatedRoute,  private userService: UserService, private router: Router) { }
+  constructor( private userService: UserService, private router: Router) { }
 
   ngOnInit() {
     this.nombreUsuario = this.userService.getUserName();
@@ -20,6 +19,10 @@ export class PrincipalPage implements OnInit {
 
   irChat(){
     this.router.navigate(['/chat']);
+  }
+
+  irPrincipal(){
+    this.router.navigate(['/Principal']);
   }
 
 }

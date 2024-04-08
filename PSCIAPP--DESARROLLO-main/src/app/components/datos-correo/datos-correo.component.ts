@@ -4,8 +4,8 @@ import { UserService } from '../../services/user.service';
 import { Observable, of } from 'rxjs';  
 import { Subscription } from 'rxjs';
 import { Router } from '@angular/router';
-import { AngularFirestore, AngularFirestoreCollection } from '@angular/fire/compat/firestore';
-import { CollectionReference, Query } from '@angular/fire/compat/firestore';
+import { AlertController } from '@ionic/angular';
+
 
 
 @Component({
@@ -21,21 +21,46 @@ export class DatosCorreoComponent  implements OnInit {
   ano: number = 2004;
   genero: string = '';
 
-  dias: number[] = Array.from({ length: 31 }, (_, i) => i + 1);
+  dias: number[] = [];
   meses: number[] = Array.from({ length: 12 }, (_, i) => i + 1);
   anos: number[] = Array.from({ length: 27 }, (_, i) => 2004 + i);
 
-  datosSubscription: Subscription | undefined;
+
   loading: any;
   datos$: Observable<any[]> = of([]); 
+  datosSubscription: Subscription | undefined;
 
   constructor(
     private loadingController: LoadingController,
     private userService: UserService,
-    private router: Router
+    private router: Router,
+    private alertController: AlertController
   ) { }
 
+  ngOnInit() {
+    this.actualizarDias();
+  }
+
+  actualizarDias() {
+    this.dias = [];
+    const diasEnMes = new Date(this.ano, this.mes, 0).getDate(); // Obtiene la cantidad de días en el mes seleccionado
+    for (let i = 1; i <= diasEnMes; i++) {
+      this.dias.push(i);
+    }
+  }
+
   async submitForm() {
+
+    if (!this.nombre || this.dia === undefined || this.mes === undefined || this.ano === undefined || !this.genero) {
+      const alert = await this.alertController.create({
+        header: 'Error',
+        message: 'Por favor, complete todos los campos del formulario.',
+        buttons: ['OK']
+      });
+      await alert.present();
+      return;
+    }
+    
     this.loading = await this.loadingController.create({
       message: 'Cargando...',
       duration: 2000,
@@ -46,7 +71,7 @@ export class DatosCorreoComponent  implements OnInit {
     if (userId) {
       await this.userService.saveFormDataCorreo(userId, this.nombre, `${this.dia}/${this.mes}/${this.ano}`, this.genero);
 
-      await this.userService.sendUserNameToServer(userId, this.nombre);
+      
       localStorage.setItem(`correoContraseñaNombre_${userId}`, this.nombre);
 
       setTimeout(() => {
@@ -56,42 +81,15 @@ export class DatosCorreoComponent  implements OnInit {
     this.router.navigate(['/principal2', { nombre: this.nombre }]);
   }
 
+
   misDatos: any[] = [];
 
-  async recibirDatos() {
-    const userId = this.userService.getUserId();
   
-    if (userId) {
-      const formDataCollectionRef: AngularFirestoreCollection<any> = this.userService.getFirestore().collection<any>(`form-data-Correo`);
-  
-      if (formDataCollectionRef) {
-        const whereFn: (field: string | CollectionReference | Query, operator: any, value: any) => Query = formDataCollectionRef.ref.where.bind(formDataCollectionRef.ref);
-        const query: Query = whereFn('userId', '==', userId);
-  
-        query
-          .get()
-          .then((snapshot) => {
-            const datos = snapshot.docs.map(doc => doc.data());
-            console.log('Datos recibidos:', datos);
-            this.misDatos = datos;
-          })
-          .catch((error) => {
-            console.error("Error al recibir datos:", error);
-          });
-      } else {
-        console.error("No se pudo obtener la referencia de la colección form-data-Correo.");
-      }
-    } else {
-      console.error("No se pudo obtener el ID de usuario.");
-    }
-  }
-
   ngOnDestroy() {
     if (this.datosSubscription) {
       this.datosSubscription.unsubscribe();
     }
   }
 
-  ngOnInit() {}
 
 }
