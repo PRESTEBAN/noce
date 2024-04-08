@@ -51,7 +51,7 @@ export class ChatPage implements OnInit {
             snapshot.forEach(doc => {
               const message = doc.data() as Message;
               if (message.sender === 'user') {
-                message.imageUrl = 'http://imgfz.com/i/dqtw7Qy.png'; // Aquí establece la URL de la imagen del usuario
+                message.imageUrl = 'https://imgfz.com/i/dqtw7Qy.png'; // Aquí establece la URL de la imagen del usuario
               }
               this.messages.push(message);
             });
@@ -168,7 +168,7 @@ export class ChatPage implements OnInit {
       case 6:
         return 'https://i.ibb.co/Lv2wM6D/Sara.png'
       default:
-        return 'url_por_defecto'; // En caso de elección inválida
+        return 'https://w1.pngwing.com/pngs/278/853/png-transparent-line-art-nose-chatbot-internet-bot-artificial-intelligence-snout-head-smile-black-and-white.png'; // En caso de elección inválida
     }
   }
 
