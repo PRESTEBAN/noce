@@ -142,7 +142,7 @@ export class Principal2Page implements OnInit  {
     const seconds = now.getSeconds();
 
     // Verificar si es 11:00 - 11:25 o 10:55 - 10:59
-    if (hours === 22 && minutes === 10 && seconds=== 0) {
+    if (hours === 22 && minutes === 20 && seconds=== 0) {
       // Si cumple la condición, cargar nuevas tarjetas para el usuario
       console.log('Se cumple la condición de hora. Generando nuevas tarjetas...');
       this.loadRandomCard(userId);
